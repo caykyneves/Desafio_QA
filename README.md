@@ -1,6 +1,6 @@
-✅ Desafio QA 
+✅ Desafio QA
 
-Este repositório contém a solução para o desafio de QA, com foco em automação de testes funcionais em uma plataforma de delivery.
+Este repositório contém a solução para o desafio de QA, com foco em automação de testes funcionais e de API em uma plataforma de delivery.
 
 📌 Objetivo
 
@@ -8,113 +8,125 @@ Garantir a qualidade dos principais fluxos de compra na plataforma, validando ce
 
 🧪 Testes Automatizados
 
+### 🔸 Testes de Interface (UI)
+
 Foram identificados e automatizados os seguintes cenários dentro do Fluxo do Carrinho:
 
-1. Adicionar produto ao carrinho
+**Adicionar produto ao carrinho**
 
-     Cenário: Adicionar produto ao carrinho
-    Dado que o cliente está logado na plataforma
-    Quando ele selecionar um produto e clicar em “Adicionar”
-    Então o produto deve aparecer na sacola
+* **Cenário:** Dado que o cliente está logado na plataforma, quando ele selecionar um produto e clicar em “Adicionar”, então o produto deve aparecer na sacola.
+* **Arquivo:** `adicionar_produto_carrinho.cy.js`
 
-Arquivo: adicionar_produto_carrinho.cy.js
+**Editar produto no carrinho**
 
-Valida que o produto é adicionado com sucesso ao carrinho.
+* **Cenário:** Dado que o cliente adicionou um produto ao carrinho, quando ele acessar o carrinho e clicar em “Editar” e modificar a observação, então o carrinho deve refletir a alteração.
+* **Arquivo:** `editar_produto_carrinho.cy.js`
 
-2. Editar produto no carrinho
+**Excluir produto do carrinho**
 
- Cenário: Editar produto no carrinho
-    Dado que o cliente adicionou um produto ao carrinho
-    Quando ele acessar o carrinho e clicar em “Editar”
-    E modificar a observação
-    Então o carrinho deve refletir a alteração
-    
-Arquivo: editar_produto_carrinho.cy.js
+* **Cenário:** Dado que o cliente possui itens na sacola, quando ele clicar em “Remover”, então o item deve ser excluído do carrinho.
+* **Arquivo:** `excluir_produto_carrinho.cy.js`
 
-Altera informações do item no carrinho, como a observação.
+**Finalizar compra com pagamento**
 
-3. Excluir produto do carrinho
+* **Cenário:** Dado que o cliente adicionou um produto e acessou o carrinho, quando ele escolher a forma de pagamento, preencher CPF e telefone, então o pedido deve ser finalizado com sucesso.
+* **Arquivo:** `pagar_produto_carrinho.cy.js`
 
- Cenário: Excluir produto do carrinho
-    Dado que o cliente possui itens na sacola
-    Quando ele clicar em “Remover”
-    Então o item deve ser excluído do carrinho
+### 🔸 Testes de API (DummyJSON)
 
-Arquivo: excluir_produto_carrinho.cy.cy.js
+Utilizando a API pública DummyJSON para simular ações de carrinho:
 
-Remove um item previamente adicionado ao carrinho.
+**Adicionar item ao carrinho**
 
-4. Finalizar compra com pagamento
+* **Endpoint:** `POST /carts/add`
+* **Cenário:** Enviar `userId` e `products`, validar status 201 e existência de `id` no retorno.
 
-   Cenário: Finalizar pedido com pagamento
-    Dado que o cliente adicionou um produto e acessou o carrinho
-    Quando ele escolher a forma de pagamento, preencher CPF e telefone
-    Então o pedido deve ser finalizado com sucesso
+**Atualizar item no carrinho**
 
-Arquivo: pagar_produto_carrinho.cy.js
+* **Endpoint:** `PUT /carts/1`
+* **Cenário:** Atualizar quantidade de produtos, validar status 200 e nova `totalQuantity`.
 
-Simula o fluxo completo: adicionar produto, escolher forma de pagamento e confirmar o pedido.
+**Remover carrinho**
+
+* **Endpoint:** `DELETE /carts/1`
+
+* **Cenário:** Excluir carrinho e validar status 200 e confirmação de exclusão.
+
+* **Arquivo:** `cart_api.cy.js`
+
+* **Técnicas usadas:**
+
+  * Validação de status HTTP (200 e 201)
+  * Teste de contrato (validação das propriedades retornadas)
+  * Testes positivos e negativos (quando aplicável)
 
 🔐 Dados de Login
 
-O sistema requer autenticação via e-mail, senha e OTP. Os dados estão armazenados em login.json:
+O sistema requer autenticação via e-mail, senha e OTP. Os dados estão armazenados em `login.json`:
 
+```json
 {
   "email": "desafio.qa2025@gmail.com",
   "senha": "Teste123@@",
   "otp": "AAAAAA"
 }
+```
 
-A função customizada cy.loginComSenhaEOtp() é usada para autenticar o usuário no sistema antes dos testes.
+A função customizada `cy.loginComSenhaEOtp()` é usada para autenticar o usuário antes dos testes UI.
 
 📁 Estrutura de Pastas
 
+```
 ├── cypress
-│   └── e2e
-│       ├── adicionar_produto_carrinho.cy.js
-│       ├── editar_produto_carrinho.cy.js
-│       ├── excluir_produto_carrinho.cy.cy.js
-│       └── pagar_produto_carrinho.cy.js
-├── cypress
+│   ├── e2e
+│   │   ├── adicionar_produto_carrinho.cy.js
+│   │   ├── editar_produto_carrinho.cy.js
+│   │   ├── excluir_produto_carrinho.cy.js
+│   │   ├── pagar_produto_carrinho.cy.js
+│   │   └── cart_api.cy.js
 │   └── fixtures
 │       └── login.json
+├── cypress.config.js
+├── package.json
+└── README.md
+```
 
 ⚙️ Como rodar o projeto
 
 Instale as dependências:
 
+```bash
 npm install
+```
 
 Execute os testes com Cypress:
 
+```bash
 npx cypress open
+```
 
-Escolha o teste desejado para rodar via interface.
+Ou em modo headless:
 
-Ou rode em modo headless:
-
+```bash
 npx cypress run
+```
 
 ✅ Boas práticas aplicadas
 
-Uso de comandos customizados para login.
-
-Testes independentes e reexecutáveis.
-
-Cobertura de cenários positivos e negativos.
-
-Código limpo, comentado e organizado.
-
-Casos de teste no padrão BDD, descritos claramente.
+* Uso de comandos customizados para login.
+* Testes independentes e reexecutáveis.
+* Cobertura de cenários positivos e negativos.
+* Código limpo, comentado e organizado.
+* Casos de teste descritos em estilo BDD.
 
 👨‍💻 Tecnologias
 
-Cypress
-
-JavaScript (ES6)
+* Cypress
+* JavaScript (ES6)
 
 📌 Considerações finais
 
-A automação foi focada nos principais fluxos de compra, alinhada à proposta do desafio. Todos os testes visam garantir que a experiência de compra no delivery seja estável, funcional e sem impedimentos críticos.
+A automação cobre os fluxos mais críticos da jornada do cliente, tanto na interface quanto na API, garantindo que o sistema funcione de ponta a ponta com estabilidade e segurança.
 
-Feito  por Cayky Vieira
+Feito por **Cayky Vieira**
+
